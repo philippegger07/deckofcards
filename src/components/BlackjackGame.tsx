@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+
+import {useEffect, useState} from "react";
 
 const API_BASE_URL = "https://deckofcardsapi.com/api/deck";
 
@@ -135,8 +136,6 @@ const BlackjackGame = () => {
     };
 
 
-
-
     // Stapel beim Laden der Komponente erstellen
     useEffect(() => {
         createDeck();
@@ -153,7 +152,7 @@ const BlackjackGame = () => {
                 <h2>Dealers Hand ({calculateHandValue(dealerHand)})</h2>
                 <div>
                     {dealerHand.map((card, index) => (
-                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} width="50" />
+                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} width="50"/>
                     ))}
                 </div>
             </div>
@@ -162,7 +161,7 @@ const BlackjackGame = () => {
                 <h2>Deine Hand ({calculateHandValue(playerHand)})</h2>
                 <div>
                     {playerHand.map((card, index) => (
-                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} width="50" />
+                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} width="50"/>
                     ))}
                 </div>
             </div>
