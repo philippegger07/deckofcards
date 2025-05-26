@@ -1,183 +1,123 @@
-"use client";
+'use client';
+import { useState, useEffect } from 'react';
+import PlayerHand from './PlayerHand';
+import DealerHand from './DealerHand';
+import Controls from './Controls';
+import GameStatus from './GameStatus';
+import { CardType } from '../types/Card';
+import './styles/Blackjack.css';
 
 
-import {useEffect, useState} from "react";
+const API_BASE = 'https://deckofcardsapi.com/api/deck';
 
-const API_BASE_URL = "https://deckofcardsapi.com/api/deck";
-
-interface Card {
-    code: string;
-    image: string;
-    value: string;
-    suit: string;
-}
-
-const BlackjackGame = () => {
+const BlackjackGame: React.FC = () => {
     const [deckId, setDeckId] = useState<string | null>(null);
-    const [playerHand, setPlayerHand] = useState<Card[]>([]);
-    const [dealerHand, setDealerHand] = useState<Card[]>([]);
-    const [message, setMessage] = useState<string>("");
-    const [gameOver, setGameOver] = useState<boolean>(false);
-    const [isPlayerTurn, setIsPlayerTurn] = useState<boolean>(true);
+    const [playerCards, setPlayerCards] = useState<CardType[]>([]);
+    const [dealerCards, setDealerCards] = useState<CardType[]>([]);
+    const [gameStatus, setGameStatus] = useState<string>('Playing');
+    const [showDealerCards, setShowDealerCards] = useState<boolean>(false);
 
-    // Funktion, um einen neuen Kartenstapel zu erstellen
-    const createDeck = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/new/shuffle/?deck_count=1`);
+    useEffect(() => {
+        const initializeDeck = async () => {
+            const response = await fetch(`${API_BASE}/new/shuffle/?deck_count=6`);
             const data = await response.json();
             setDeckId(data.deck_id);
-        } catch (error) {
-            console.error("Fehler beim Erstellen des Kartenstapels:", error);
-        }
-    };
+        };
+        initializeDeck();
+    }, []);
 
-    // Funktion, um Karten aus dem Stapel zu ziehen
-    const drawCards = async (count: number) => {
+    const drawCards = async (count: number): Promise<CardType[]> => {
         if (!deckId) return [];
-        try {
-            const response = await fetch(`${API_BASE_URL}/${deckId}/draw/?count=${count}`);
-            const data = await response.json();
-            return data.cards;
-        } catch (error) {
-            console.error("Fehler beim Ziehen der Karten:", error);
-            return [];
+        const response = await fetch(`${API_BASE}/${deckId}/draw/?count=${count}`);
+        const data = await response.json();
+        return data.cards;
+    };
+
+    const handleHit = async () => {
+        if (gameStatus !== 'Playing') return;
+        const newCard = await drawCards(1);
+        const updatedPlayerCards = [...playerCards, ...newCard];
+        setPlayerCards(updatedPlayerCards);
+
+        const playerScore = calculateScore(updatedPlayerCards);
+        if (playerScore > 21) {
+            setGameStatus('Lost');
+            setShowDealerCards(true);
         }
     };
 
-    // Berechnung des Handwerts
-    const calculateHandValue = (hand: Card[]) => {
-        let total = 0;
+    const handleStand = async () => {
+        if (gameStatus !== 'Playing') return;
+
+        let updatedDealerCards = [...dealerCards];
+        while (calculateScore(updatedDealerCards) < 17) {
+            const moreCards = await drawCards(1);
+            updatedDealerCards = [...updatedDealerCards, ...moreCards];
+        }
+        setDealerCards(updatedDealerCards);
+        setShowDealerCards(true);
+
+        const playerScore = calculateScore(playerCards);
+        const dealerScore = calculateScore(updatedDealerCards);
+
+        if (dealerScore > 21 || playerScore > dealerScore) {
+            setGameStatus('Won');
+        } else if (dealerScore > playerScore) {
+            setGameStatus('Lost');
+        } else {
+            setGameStatus('Draw');
+        }
+    };
+
+    const handleNewGame = async () => {
+        if (!deckId) return;
+        const initialCards = await drawCards(4);
+        setPlayerCards(initialCards.slice(0, 2));
+        setDealerCards(initialCards.slice(2, 4));
+        setGameStatus('Playing');
+        setShowDealerCards(false);
+    };
+
+    const calculateScore = (cards: CardType[]): number => {
+        let score = 0;
         let aces = 0;
 
-        hand.forEach((card) => {
-            if (!card || !card.value) return; // ⛑ Schutz gegen undefinierte Karten
-
-            if (card.value === "KING" || card.value === "QUEEN" || card.value === "JACK") {
-                total += 10;
-            } else if (card.value === "ACE") {
-                total += 11;
+        cards.forEach(card => {
+            const value = card.value;
+            if (['JACK', 'QUEEN', 'KING'].includes(value)) {
+                score += 10;
+            } else if (value === 'ACE') {
                 aces += 1;
+                score += 11;
             } else {
-                total += parseInt(card.value);
+                score += parseInt(value, 10);
             }
         });
 
-        while (total > 21 && aces > 0) {
-            total -= 10;
+        while (score > 21 && aces > 0) {
+            score -= 10;
             aces -= 1;
         }
 
-        return total;
+        return score;
     };
 
-
-    // Start des Spiels, initial 2 Karten für Spieler und Dealer ziehen
-    const startGame = async () => {
-        if (!deckId) return;
-
-        const cards = await drawCards(4); // Zwei Karten für den Spieler und zwei für den Dealer
-        setPlayerHand([cards[0], cards[2]]);
-        setDealerHand([cards[1], cards[3]]);
-        setMessage("Dein Zug!");
-        setGameOver(false); // Spielstatus auf "Nicht vorbei" setzen
-        setIsPlayerTurn(true); // Spieler beginnt das Spiel
-    };
-
-    // Hit - Eine Karte ziehen
-    const handleHit = async () => {
-        if (!deckId || gameOver || !isPlayerTurn) return;
-
-        const card = await drawCards(1);
-        const newHand = [...playerHand, ...card];
-        setPlayerHand(newHand);
-
-        const total = calculateHandValue(newHand);
-        if (total > 21) {
-            setMessage("Du hast überkauft! Dealer gewinnt.");
-            setGameOver(true);
-            setIsPlayerTurn(false);
-        }
-    };
-
-
-    // Stand - Spieler hört auf zu ziehen, Dealer spielt nun
-    const handleStand = async () => {
-        setIsPlayerTurn(false);
-
-        const playerTotal = calculateHandValue(playerHand);
-        if (playerTotal > 21) {
-            setMessage("Du hast überkauft! Dealer gewinnt.");
-            setGameOver(true);
-            return;
-        }
-
-        const currentHand = [...dealerHand];
-        let dealerTotal = calculateHandValue(currentHand);
-
-        while (dealerTotal < 17) {
-            const card = await drawCards(1);
-            currentHand.push(card[0]);
-            dealerTotal = calculateHandValue(currentHand);
-        }
-
-        setDealerHand(currentHand);
-
-        if (dealerTotal > 21) {
-            setMessage("Dealer überkauft! Du gewinnst!");
-        } else if (dealerTotal > playerTotal) {
-            setMessage("Dealer gewinnt!");
-        } else if (dealerTotal < playerTotal) {
-            setMessage("Du gewinnst!");
-        } else {
-            setMessage("Unentschieden!");
-        }
-
-        setGameOver(true);
-    };
-
-
-    // Stapel beim Laden der Komponente erstellen
     useEffect(() => {
-        createDeck();
-    }, []);
+        if (deckId) handleNewGame();
+    }, [deckId]);
 
     return (
-        <div>
+        <div className="text-center">
             <h1>Blackjack</h1>
-            {!gameOver && (
-                <button onClick={startGame}>Spiel starten</button>
-            )}
-
-            <div>
-                <h2>Dealers Hand ({calculateHandValue(dealerHand)})</h2>
-                <div>
-                    {dealerHand.map((card, index) => (
-                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} width="50"/>
-                    ))}
-                </div>
-            </div>
-
-            <div>
-                <h2>Deine Hand ({calculateHandValue(playerHand)})</h2>
-                <div>
-                    {playerHand.map((card, index) => (
-                        <img key={index} src={card.image} alt={`${card.value} of ${card.suit}`} width="50"/>
-                    ))}
-                </div>
-            </div>
-
-            <div>
-                <p>{message}</p>
-                {!gameOver && isPlayerTurn && (
-                    <>
-                        <button onClick={handleHit}>Hit</button>
-                        <button onClick={handleStand}>Stand</button>
-                    </>
-                )}
-                {gameOver && (
-                    <button onClick={startGame}>Neues Spiel</button>
-                )}
-            </div>
+            <DealerHand cards={dealerCards} reveal={showDealerCards} score={calculateScore(dealerCards)} />
+            <PlayerHand cards={playerCards} score={calculateScore(playerCards)} />
+            <GameStatus status={gameStatus} />
+            <Controls
+                onHit={handleHit}
+                onStand={handleStand}
+                onNewGame={handleNewGame}
+                isGameOver={gameStatus !== 'Playing'}
+            />
         </div>
     );
 };

@@ -1,0 +1,102 @@
+/* Grundlegendes Styling für den Body */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #2e7d32; /* Kartentisch-Grün */
+    color: #fff;
+}
+
+/* Container für das ganze Spiel */
+.text-center {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background-color: #1b5e20;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Überschrift */
+h1 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    color: #fdd835;
+}
+
+/* Kartenbereich */
+.hand {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+/* Einzelne Karte */
+.card {
+    width: 80px;
+    height: 120px;
+    border-radius: 10px;
+    background-color: white;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Score-Anzeige */
+.score {
+    margin-top: 10px;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* Button-Steuerung */
+.controls {
+    margin-top: 30px;
+}
+
+.controls button {
+    background-color: #fbc02d;
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    margin: 0 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.controls button:hover {
+    background-color: #f9a825;
+}
+
+.controls button:disabled {
+    background-color: #bdbdbd;
+    cursor: not-allowed;
+}
+
+/* Spielstatus */
+.game-status {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.status-Playing {
+    background-color: #0288d1;
+}
+
+.status-Won {
+    background-color: #388e3c;
+}
+
+.status-Lost {
+    background-color: #c62828;
+}
+
+.status-Draw {
+    background-color: #f57c00;
+}
