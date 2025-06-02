@@ -1,0 +1,11 @@
+Klare Namen verwenden: Gib Variablen und Funktionen selbsterklärende Namen, damit jeder sofort versteht, was sie tun
+                                                                        (z.B. calculateScore, playerCards, handleHit).
+Alles typisieren (TypeScript): Nutze immer klare Typen für deinen State, Props und Funktionen
+State niemals direkt ändern: Erstelle bei State-Änderungen immer eine Kopie.
+
+Richtig: setPlayerCards([...playerCards, ...newCard]);
+Falsch: playerCards.push(newCard);
+Eine Funktion = Eine Aufgabe: Jede Funktion sollte nur eine einzige, klare Aufgabe haben.
+
+UI in Komponenten aufteilen: wie PlayerHand, DealerHand, Controls
+
