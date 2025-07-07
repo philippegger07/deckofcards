@@ -19,18 +19,27 @@ const BlackjackGame: React.FC = () => {
 
     useEffect(() => {
         const initializeDeck = async () => {
-            const response = await fetch(`${API_BASE}/new/shuffle/?deck_count=6`);
-            const data = await response.json();
-            setDeckId(data.deck_id);
+            try {
+                const response = await fetch(`${API_BASE}/new/shuffle/?deck_count=6`);
+                const data = await response.json();
+                setDeckId(data.deck_id);
+            } catch (error) {
+                alert('Deck konnte nicht initialisiert werden.');
+            }
         };
         initializeDeck();
     }, []);
 
     const drawCards = async (count: number): Promise<CardType[]> => {
         if (!deckId) return [];
-        const response = await fetch(`${API_BASE}/${deckId}/draw/?count=${count}`);
-        const data = await response.json();
-        return data.cards;
+        try {
+            const response = await fetch(`${API_BASE}/${deckId}/draw/?count=${count}`);
+            const data = await response.json();
+            return data.cards;
+        } catch (error) {
+            alert('Fehler beim Ziehen der Karten. Bitte probiere es erneut.');
+            return [];
+        }
     };
 
     const handleHit = async () => {
@@ -72,10 +81,27 @@ const BlackjackGame: React.FC = () => {
     const handleNewGame = async () => {
         if (!deckId) return;
         const initialCards = await drawCards(4);
-        setPlayerCards(initialCards.slice(0, 2));
-        setDealerCards(initialCards.slice(2, 4));
-        setGameStatus('Playing');
-        setShowDealerCards(false);
+        const initialPlayerCards = initialCards.slice(0, 2);
+        const initialDealerCards = initialCards.slice(2, 4);
+        setPlayerCards(initialPlayerCards);
+        setDealerCards(initialDealerCards);
+
+        const playerScore = calculateScore(initialPlayerCards);
+        const dealerScore = calculateScore(initialDealerCards);
+
+        if (playerScore === 21 && dealerScore === 21) {
+            setGameStatus('Draw');
+            setShowDealerCards(true);
+        } else if (playerScore === 21) {
+            setGameStatus('Won');
+            setShowDealerCards(true);
+        } else if (dealerScore === 21) {
+            setGameStatus('Lost');
+            setShowDealerCards(true);
+        } else {
+            setGameStatus('Playing');
+            setShowDealerCards(false);
+        }
     };
 
     const calculateScore = (cards: CardType[]): number => {

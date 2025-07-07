@@ -7,12 +7,7 @@ interface ControlsProps {
     isGameOver: boolean;
 }
 
-const Controls: React.FC<{
-    onHit: () => void;
-    onStand: () => void;
-    onNewGame: () => void;
-    isGameOver: boolean;
-}> = ({ onHit, onStand, onNewGame, isGameOver }) => {
+const Controls: React.FC<ControlsProps> = ({ onHit, onStand, onNewGame, isGameOver }) => {
     return (
         <div className="controls">
             {!isGameOver && (
