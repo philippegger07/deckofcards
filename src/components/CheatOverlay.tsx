@@ -79,7 +79,6 @@ const CheatOverlay: React.FC<CheatOverlayProps> = ({
     const winChance = playerScore > 21 ? 0 : (bust < 0.45 ? 0.6 : 0.3); // Dummy approx.
     const remainingCounts = getRemainingCounts(drawnCards, deckCount);
 
-    // Drag logic
     const overlayRef = useRef<HTMLDivElement>(null);
     const [pos, setPos] = useState({ x: window.innerWidth * 0.5 - 140, y: 80 });
     const [dragging, setDragging] = useState(false);

@@ -63,17 +63,15 @@ const BlackjackGame: React.FC = () => {
         if (gameStatus !== 'Playing') return;
 
         let updatedDealerCards = [...dealerCards];
-        setShowDealerCards(true); // Zeige die Hand des Dealers (erste Karte bleibt offen, weitere werden animiert gezogen)
+        setShowDealerCards(true);
 
-        // Dealer zieht solange Score < 17 — mit Pause zwischen den Karten
         while (calculateScore(updatedDealerCards) < 17) {
             const moreCards = await drawCards(1);
             updatedDealerCards = [...updatedDealerCards, ...moreCards];
-            setDealerCards([...updatedDealerCards]); // Aktualisiere Ansicht nach jeder Karte
-            await new Promise(resolve => setTimeout(resolve, 700)); // 700ms warten
+            setDealerCards([...updatedDealerCards]);
+            await new Promise(resolve => setTimeout(resolve, 700));
         }
 
-        // Nach Ziehen alle Karten: Gewinner ermitteln
         const playerScore = calculateScore(playerCards);
         const dealerScore = calculateScore(updatedDealerCards);
 
@@ -93,7 +91,7 @@ const BlackjackGame: React.FC = () => {
         const initialDealerCards = initialCards.slice(2, 4);
         setPlayerCards(initialPlayerCards);
         setDealerCards(initialDealerCards);
-        setDrawnCards([]); // neu!
+        setDrawnCards([]);
 
 
         const playerScore = calculateScore(initialPlayerCards);
