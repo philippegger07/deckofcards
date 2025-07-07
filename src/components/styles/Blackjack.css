@@ -1,102 +1,171 @@
-/* Grundlegendes Styling für den Body */
-body {
+html, body {
+    height: 100%;
     margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #2e7d32; /* Kartentisch-Grün */
+    background: radial-gradient(circle at 40% 40%, #388e3c 80%, #1b5e20 100%);
     color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    box-sizing: border-box;
 }
 
-/* Container für das ganze Spiel */
+
 .text-center {
     text-align: center;
     max-width: 900px;
     margin: 0 auto;
-    padding: 40px 20px;
-    background-color: #1b5e20;
+    padding: 32px 12px 96px 12px;
+    background: rgba(27, 94, 32, 0.94);
     border-radius: 16px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 30px 6px rgba(0, 0, 0, 0.55);
+    min-height: 90vh;
+    box-sizing: border-box;
+    position: relative;
 }
 
-/* Überschrift */
 h1 {
-    font-size: 3rem;
-    margin-bottom: 30px;
-    color: #fdd835;
+    font-size: 2.4rem;
+    margin-bottom: 24px;
+    color: #ffe082;
+    letter-spacing: 1.5px;
+    text-shadow: 1px 1px 8px #0008;
 }
 
-/* Kartenbereich */
 .hand {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
-    margin: 20px 0;
+    gap: 14px;
+    margin: 18px 0;
 }
 
-/* Einzelne Karte */
 .card {
-    width: 80px;
-    height: 120px;
+    width: 72px;
+    height: 110px;
     border-radius: 10px;
-    background-color: white;
+    background: linear-gradient(145deg, #fff 80%, #e0e0e0 100%);
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.28), 0 1px 1.5px #0001 inset;
+    border: 2px solid #388e3c;
+    position: relative;
+    transition: transform 0.13s, box-shadow 0.13s;
+}
+.card:hover {
+    transform: scale(1.04) rotate(-1.5deg);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.37);
 }
 
-/* Score-Anzeige */
 .score {
-    margin-top: 10px;
-    font-size: 1.3rem;
+    margin-top: 8px;
+    font-size: 1.18rem;
     font-weight: bold;
+    letter-spacing: 0.5px;
+    background: rgba(0,0,0,0.13);
+    padding: 5px 12px;
+    border-radius: 9px;
+    display: inline-block;
 }
 
-/* Button-Steuerung */
 .controls {
-    margin-top: 30px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(0deg, rgba(27,94,32,0.98) 90%, rgba(27,94,32,0.4) 100%);
+    padding: 16px 0 22px 0;
+    box-shadow: 0 -2px 12px #0006;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
 }
 
 .controls button {
-    background-color: #fbc02d;
-    color: black;
+    background: linear-gradient(90deg, #ffd54f 60%, #fbc02d 100%);
+    color: #222;
     border: none;
-    padding: 12px 24px;
-    margin: 0 10px;
+    padding: 12px 22px;
     font-size: 1rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    font-weight: 600;
+    box-shadow: 0 2px 6px #0002;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.13s;
+    outline: none;
 }
 
-.controls button:hover {
-    background-color: #f9a825;
+.controls button:hover:not(:disabled) {
+    background: linear-gradient(90deg, #ffe082 60%, #f9a825 100%);
+    box-shadow: 0 4px 14px #0003;
+    transform: translateY(-2px) scale(1.03);
 }
 
 .controls button:disabled {
-    background-color: #bdbdbd;
+    background: #bdbdbd;
+    color: #444;
     cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
 }
 
-/* Spielstatus */
 .game-status {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    margin-top: 20px;
-    padding: 12px;
+    margin-top: 18px;
+    padding: 10px;
     border-radius: 8px;
+    box-shadow: 0 2px 8px #0003;
+    letter-spacing: 1.1px;
+    display: inline-block;
+    min-width: 120px;
 }
 
 .status-Playing {
-    background-color: #0288d1;
+    background: linear-gradient(90deg, #0288d1 70%, #26c6da 100%);
 }
 
 .status-Won {
-    background-color: #388e3c;
+    background: linear-gradient(90deg, #43a047 60%, #aeea00 100%);
+    color: #263238;
 }
 
 .status-Lost {
-    background-color: #c62828;
+    background: linear-gradient(90deg, #c62828 70%, #ff5252 100%);
+    color: #fff;
 }
 
 .status-Draw {
-    background-color: #f57c00;
+    background: linear-gradient(90deg, #f57c00 70%, #ffd54f 100%);
+    color: #222;
+}
+
+@media (max-width: 600px) {
+    .text-center {
+        padding: 8px 1vw 88px 1vw;
+        min-height: 88vh;
+    }
+    .card {
+        width: 47px;
+        height: 72px;
+        font-size: 0.8rem;
+    }
+    h1 {
+        font-size: 1.25rem;
+    }
+    .score, .game-status {
+        font-size: 0.98rem;
+    }
+    .controls {
+        padding: 8px 0 14px 0;
+        gap: 8px;
+    }
+    .controls button {
+        padding: 8px 12px;
+        font-size: 0.93rem;
+    }
 }
