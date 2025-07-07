@@ -1,4 +1,3 @@
-// src/components/GameStatus.tsx
 'use client';
 
 interface GameStatusProps {
