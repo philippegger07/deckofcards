@@ -6,6 +6,7 @@ import Controls from './Controls';
 import GameStatus from './GameStatus';
 import { CardType } from '../types/Card';
 import './styles/Blackjack.css';
+import CheatOverlay from './CheatOverlay';
 
 
 const API_BASE = 'https://deckofcardsapi.com/api/deck';
@@ -16,6 +17,8 @@ const BlackjackGame: React.FC = () => {
     const [dealerCards, setDealerCards] = useState<CardType[]>([]);
     const [gameStatus, setGameStatus] = useState<string>('Playing');
     const [showDealerCards, setShowDealerCards] = useState<boolean>(false);
+    const [cheatMode, setCheatMode] = useState(false);
+    const [drawnCards, setDrawnCards] = useState<CardType[]>([]);
 
     useEffect(() => {
         const initializeDeck = async () => {
@@ -35,6 +38,7 @@ const BlackjackGame: React.FC = () => {
         try {
             const response = await fetch(`${API_BASE}/${deckId}/draw/?count=${count}`);
             const data = await response.json();
+            setDrawnCards(prev => [...prev, ...data.cards]);
             return data.cards;
         } catch (error) {
             alert('Fehler beim Ziehen der Karten. Bitte probiere es erneut.');
@@ -89,6 +93,8 @@ const BlackjackGame: React.FC = () => {
         const initialDealerCards = initialCards.slice(2, 4);
         setPlayerCards(initialPlayerCards);
         setDealerCards(initialDealerCards);
+        setDrawnCards([]); // neu!
+
 
         const playerScore = calculateScore(initialPlayerCards);
         const dealerScore = calculateScore(initialDealerCards);
@@ -137,7 +143,34 @@ const BlackjackGame: React.FC = () => {
     }, [deckId]);
 
     return (
-        <div className="text-center">
+        <div className="text-center" style={{position: 'relative'}}>
+            <button
+                style={{
+                    position: 'absolute',
+                    top: 12,
+                    left: 12,
+                    zIndex: 20,
+                    background: cheatMode ? '#FFEB3B' : '#444',
+                    color: '#222',
+                    borderRadius: 8,
+                    border: 'none',
+                    padding: '7px 16px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                }}
+                onClick={() => setCheatMode(v => !v)}
+            >
+                {cheatMode ? 'Cheatmodus AUS' : 'Cheatmodus AN'}
+            </button>
+            {cheatMode && (
+                <CheatOverlay
+                    playerCards={playerCards}
+                    dealerCards={dealerCards}
+                    drawnCards={drawnCards}
+                    remainingCards={52 * 6 - drawnCards.length}
+                    isPlayersTurn={gameStatus === 'Playing'}
+                />
+            )}
             <h1>Blackjack</h1>
             <DealerHand cards={dealerCards} reveal={showDealerCards} score={calculateScore(dealerCards)} />
             <PlayerHand cards={playerCards} score={calculateScore(playerCards)} />
