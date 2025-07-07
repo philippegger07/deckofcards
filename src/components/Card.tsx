@@ -1,4 +1,3 @@
-// src/components/Card.tsx
 'use client';
 
 interface CardProps {
