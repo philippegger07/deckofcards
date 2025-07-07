@@ -16,9 +16,9 @@ const DealerHand: React.FC<DealerHandProps> = ({ cards, reveal, score }) => {
                 {cards.map((card, index) => (
                     <div key={index}>
                         {index === 0 || reveal ? (
-                            <Card value={card.value} image={card.image} />
+                            <Card value={card.value} image={card.image}/>
                         ) : (
-                            <div className="score">Score: {score}</div>
+                            <img className="card" src="https://www.deckofcardsapi.com/static/img/back.png" alt="hidden card"/>
                         )}
                     </div>
                 ))}
